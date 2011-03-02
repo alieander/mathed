@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>mathed by Ryan Sandor Richards</title>
+		<link rel="stylesheet" href="mathed.css" type="text/css">
+	</head>
+	<body>
+		<h1>Mathed, by Ryan Sandor Richards</h1>
+		<div id="examples">
+			Try these:
+			<ul>
+				<li>2x+1</li>
+				<li>cos^2 theta + sin^2 theta = 1<li>
+				<li>e^{pi i} = -1</li>
+			</ul>
+		</div>
+		
+		<p><input type="text" name="mathin" value="" id="mathin"> converts to <span id="mathout"></span></p>
+		<script src="mathed.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" charset="utf-8">
+			var mathin = document.getElementById('mathin'),
+				mathout = document.getElementById('mathout');
+			mathin.onkeydown = mathin.onkeyup = function(e) {
+				if (e.keyCode == 13)
+					mathin.value = '';
+				mathout.innerHTML = Mathed.convert(mathin.value);
+			};
+		</script>
+	</body>
+</html>
