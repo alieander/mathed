@@ -9,7 +9,8 @@ var Mathed = (function() {
   	'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau',
   	'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega', 'alpha', 'beta', 'gamma', 'delta',
   	'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi',
-  	'omicron',	'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega'
+  	'omicron',	'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega',
+  	'and', 'or', 'not'
   ];
 
   // Non emphasised names
@@ -17,16 +18,37 @@ var Mathed = (function() {
   	'mod', 'abs', 'exp', 'sqrt', 'ln', 'lg', 'log',	'sin', 'cos', 'tan', 'cot', 
   	'sec', 'cosec', 'arcsin', 'arccos', 'arctan', 'arccot', 'sinh', 'cosh', 'tanh',
   	'coth', 'arsinh', 'arcosh', 'artanh', 'arcoth', 'rnd', 'rand', 'Si', 'Ci', 'Ei',
-  	'li', 'gamma', 'min', 'max', 'gcd', 'lcm'
+  	'li', 'gamma', 'min', 'max', 'gcd', 'lcm', '\\(', '\\)'
   ];
+  
+  // Maps strings to various symbols
+  var MAP = ['<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'intersect', '<', '>', "'", '\\|'];
+  
+  var mapToHTML = {
+    "'": ' &prime;',
+    '<=': ' &le; ',
+    '>=': ' &ge; ',
+    '!=': ' &ne; ',
+    '+-': ' &plusmn; ',
+    '&&': ' &and; ',
+    '||': ' &or; ',
+    '!': ' &not; ',
+    '<': ' &lt; ',
+    '>': ' &gt; ',
+    '|': ' &#x2223; ',
+    'union': ' &#x22c3; ',
+    'intersect': ' &#x22c2; '
+  };
   
   // Lexer
   var TokenTypes = {
+    map: new RegExp(MAP.join('|')),
     direct: new RegExp(DIRECT.join('|')),
     number: /[0-9]+(\.[0-9]+)?/,
     special: new RegExp(SPECIAL.join('|')),
+    set: 'set',
     name: /[a-zA-Z]/,
-    operator: /[+\-*\/()=:%!|]/,
+    operator: /[+\-*\/=:%!()]/,
     sub: /_/,
     sup: /\^/,
     left_brace: /\{/,
@@ -55,7 +77,7 @@ var Mathed = (function() {
   function parse(tokens) {
     var stack = [[]], top = function() { return stack[stack.length-1]; };
     for (var i = 0; i < tokens.length; i++) {
-      var t = tokens[i];
+      var t = tokens[i], prev = (i > 0 ? tokens[i-1] : null);
       if (t.value == '{')
         stack.push([]);
       else if (t.value == '}') {
@@ -76,11 +98,15 @@ var Mathed = (function() {
       if (typeof t == "undefined")
         return;
       switch((typeof t.length != "undefined") ? 'array' : t.type) {
-        case 'special':   html += t.value;                              break;
+        case 'special':
+        case 'left_brace':
+        case 'right_brace':
         case 'number':    html += t.value;                              break;
+        case 'map':       html += mapToHTML[t.value];                   break; 
         case 'direct':    html += ['&', t.value, ';'].join('');         break;
         case 'name':      html += wrap(t.value, 'em');                  break;
         case 'operator':  html += ' ' + t.value + ' ';                  break;
+        case 'set':       html += ['{ ', translate([tree[++i]]), ' }'].join(''); break;
         case 'sup':       html += wrap(translate([tree[++i]]), 'sup');  break;
         case 'sub':       html += wrap(translate([tree[++i]]), 'sub');  break;
         case 'array':     html += translate(t);                         break;
