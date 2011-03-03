@@ -1,69 +1,19 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>mathed by Ryan Sandor Richards</title>
+		<title>the mathed notebook by Ryan Sandor Richards</title>
 		<link rel="stylesheet" href="mathed.css" type="text/css">
 	</head>
 	<body>
-		<h1>Notebook</h1>
+	  <div id="header">
+		  <h1>the <i>mathed</i> <b>notebook</b> </h1>
+		  <input type="text" id="mathin">
+		</div>
 		
-		<textarea type="text" id="mathin"></textarea>
 		<div class="mathed-notebook" contenteditable="true"></div>
-		
 	
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 		<script src="mathed.js" type="text/javascript" charset="utf-8"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
-		<script type="text/javascript" charset="utf-8">
-			$(function() {
-				var nb = $('.mathed-notebook')[0], mathId = 0, currentMath = null;
-				
-				function insertHtmlAtCursor(html) {
-				    var range, node;
-				    if (window.getSelection && window.getSelection().getRangeAt) {
-				        range = window.getSelection().getRangeAt(0);
-				        node = range.createContextualFragment(html);
-				        range.insertNode(node);
-				    } else if (document.selection && document.selection.createRange) {
-				        document.selection.createRange().pasteHTML(html);
-				    }
-				}
-				
-				function normalMode(e) {
-					if (e.keyCode == 77 && e.ctrlKey) {
-						e.stopPropagation();
-						e.preventDefault();
-						mode = mathMode;
-						
-						insertHtmlAtCursor('<span data-id="' + (mathId++) + '" class="math"></span>');
-						currentMath = $('.mathed-notebook .math[data-id=' + (mathId-1) + ']');
-						$('#mathin').val('').show().focus();
-					}
-				}
-				
-				function mathMode(e) {
-					e.stopPropagation();
-					e.preventDefault();
-					if (e.keyCode == 13)
-						mode = normalMode;
-				}
-				
-				function convert(e) {
-					currentMath.html(Mathed.convert($('#mathin').val()));
-					if (e.keyCode == 13) {
-						e.stopPropagation();
-						e.preventDefault();
-						mode = normalMode;
-						nb.focus();
-						$('#mathin').hide();
-					}
-				}
-				
-				var mode = normalMode;
-				
-				
-				$('#mathin').keydown(convert).keyup(convert);
-				$('.mathed-notebook').keydown(function(e) {	mode(e); });
-			});
-		</script>
+		<script src="notebook.js" type="text/javascript" charset="utf-8"></script>
 	</body>
 </html>

@@ -22,7 +22,7 @@ var Mathed = (function() {
   ];
   
   // Maps strings to various symbols
-  var MAP = ['<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'intersect', '<', '>', "'", '\\|'],
+  var MAP = ['<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'intersect', '<', '>', "'", '\\|', ','],
     mapToHTML = {
       "'": ' &prime;',
       '<=': ' &le; ',
@@ -36,7 +36,8 @@ var Mathed = (function() {
       '>': ' &gt; ',
       '|': ' &#x2223; ',
       'union': ' &#x22c3; ',
-      'intersect': ' &#x22c2; '
+      'intersect': ' &#x22c2; ',
+      ',': ', '
     };
   
   // Lexer
