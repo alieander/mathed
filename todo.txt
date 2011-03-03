@@ -4,5 +4,7 @@ The big ol' todo list for Mathed:
   [ ] Summations, Products, and Limits
   [ ] Bar-style division
   [ ] Big braces
-  
-
+  [ ] Equations (Ctrl-e)
+  [ ] Help system / usage notes
+  [ ] More symbols: to, iff, from, in
+  [ ] Blackboard Fonts: N, Z, Q, R, C, Q, O
