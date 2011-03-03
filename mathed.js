@@ -84,9 +84,10 @@ var Mathed = (function() {
         stack.push([]);
       else if (t.value == '}') {
         var last = stack.pop();
-        top().push(last);
+        if (top())
+          top().push(last);
       }
-      else
+      else if (top())
         top().push(t);
     }
     return stack.pop();
@@ -95,6 +96,8 @@ var Mathed = (function() {
   // Translator
   function translate(tree) {
     var html = '', wrap = function(s, tag) { return ['<', tag, '>', s, '</', tag, '>'].join(''); };
+    if (!tree)
+      return;
     for (var i = 0; i < tree.length; i++) {
       var t = tree[i];
       if (typeof t == "undefined")

@@ -1,0 +1,8 @@
+The big ol' todo list for Mathed:
+
+  [ ] Tabbing between completed braces (#x#)(y) <tab> (x)(#y#)
+  [ ] Summations, Products, and Limits
+  [ ] Bar-style division
+  [ ] Big braces
+  
+
