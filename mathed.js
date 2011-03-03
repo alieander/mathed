@@ -22,23 +22,22 @@ var Mathed = (function() {
   ];
   
   // Maps strings to various symbols
-  var MAP = ['<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'intersect', '<', '>', "'", '\\|'];
-  
-  var mapToHTML = {
-    "'": ' &prime;',
-    '<=': ' &le; ',
-    '>=': ' &ge; ',
-    '!=': ' &ne; ',
-    '+-': ' &plusmn; ',
-    '&&': ' &and; ',
-    '||': ' &or; ',
-    '!': ' &not; ',
-    '<': ' &lt; ',
-    '>': ' &gt; ',
-    '|': ' &#x2223; ',
-    'union': ' &#x22c3; ',
-    'intersect': ' &#x22c2; '
-  };
+  var MAP = ['<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'intersect', '<', '>', "'", '\\|'],
+    mapToHTML = {
+      "'": ' &prime;',
+      '<=': ' &le; ',
+      '>=': ' &ge; ',
+      '!=': ' &ne; ',
+      '+-': ' &plusmn; ',
+      '&&': ' &and; ',
+      '||': ' &or; ',
+      '!': ' &not; ',
+      '<': ' &lt; ',
+      '>': ' &gt; ',
+      '|': ' &#x2223; ',
+      'union': ' &#x22c3; ',
+      'intersect': ' &#x22c2; '
+    };
   
   // Lexer
   var TokenTypes = {
@@ -61,6 +60,8 @@ var Mathed = (function() {
   var lexp = new RegExp(patterns.join('|'), 'g');
   
   function lexer(s) {
+    if (typeof s == "undefined")
+      return [];
     var tokens = [], parts = s.match(lexp);
     if (parts == null)
       return [];

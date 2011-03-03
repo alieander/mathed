@@ -2,16 +2,28 @@
  * mathed.css
  * By Ryan Sandor Richards
  */
+
+/* Notebook Styles */
+.mathed-notebook {
+  border: 1px solid #888;
+  padding: 1em;
+  width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
 #mathin {
-  border: 1px solid #333;
-  padding: 0.5em;
-  font-size: 120%;
+  background-color: #bfd7ef;
+  border: 1px dotted #204266;
+  padding: 4px;
+  font-size: 16px;
+  position: fixed;
+  width: 200px;
+  height: 100px;
+  top: 90px;
+  left: 190px;
+  display: none;
 }
 
-#mathout {
-  border: 1px dotted #333;
-  background-color: #eee;
-  padding: 0.5em;
-  font-size: 120%;
+.mathed-notebook .math {
 }
-
