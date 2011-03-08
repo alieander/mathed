@@ -4,14 +4,14 @@ Notebook:
   [ ] Tabbing between completed braces 
     (#x#)(y) <tab> (x)(#y#)
   [ ] Equation mode (Ctrl-e)
-  [ ] Overlay to darken out everything else on special modes
+  [*] Overlay to darken out everything else on special modes
   [ ] Help system / usage notes
   
 Translator:
-  [ ] More symbols: to, iff, from, in
+  [*] More symbols: to, from, in
+  [*] Blackboard Fonts: N, Z, Q, R, C, Q, O
   [ ] Summations, Products, and Limits
-  [ ] Blackboard Fonts: N, Z, Q, R, C, Q, O
   [ ] Bar-style division
   [ ] Big braces
   
-  
+

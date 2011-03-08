@@ -10,7 +10,7 @@ var Mathed = (function() {
   	'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega', 'alpha', 'beta', 'gamma', 'delta',
   	'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi',
   	'omicron',	'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega',
-  	'and', 'or', 'not'
+  	'and', 'or', 'not', 'infin'
   ];
 
   // Non emphasised names
@@ -18,11 +18,14 @@ var Mathed = (function() {
   	'mod', 'abs', 'exp', 'sqrt', 'ln', 'lg', 'log',	'sin', 'cos', 'tan', 'cot', 
   	'sec', 'cosec', 'arcsin', 'arccos', 'arctan', 'arccot', 'sinh', 'cosh', 'tanh',
   	'coth', 'arsinh', 'arcosh', 'artanh', 'arcoth', 'rnd', 'rand', 'Si', 'Ci', 'Ei',
-  	'li', 'gamma', 'min', 'max', 'gcd', 'lcm', '\\(', '\\)'
+  	'li', 'gamma', 'min', 'max', 'gcd', 'lcm', '\\(', '\\)' 
   ];
   
   // Maps strings to various symbols
-  var MAP = ['<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'intersect', '<', '>', "'", '\\|', ','],
+  var MAP = [
+      '<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'intersect', '<', '>', "'", '\\|', ',', 
+      'to', 'bbR', 'bbC', 'bbN', 'bbP', 'bbQ', 'bbZ', 'in', 'from'
+    ],
     mapToHTML = {
       "'": ' &prime;',
       '<=': ' &le; ',
@@ -37,7 +40,16 @@ var Mathed = (function() {
       '|': ' &#x2223; ',
       'union': ' &#x22c3; ',
       'intersect': ' &#x22c2; ',
-      ',': ', '
+      ',': ', ',
+      'to': ' &rarr; ',
+      'from': ' &larr; ',
+      'bbR': '&#8477;', 
+      'bbC': '&#8450;', 
+      'bbN': '&#8469;', 
+      'bbP': '&#8473;', 
+      'bbQ': '&#8474;', 
+      'bbZ': '&#8484;',
+      'in': '&#8714;'
     };
   
   // Lexer
@@ -66,12 +78,14 @@ var Mathed = (function() {
     var tokens = [], parts = s.match(lexp);
     if (parts == null)
       return [];
-    for (var i = 0; i < parts.length; i++)
-      for (var t in TokenTypes)
+    for (var i = 0; i < parts.length; i++) { 
+      for (var t in TokenTypes) {
         if (parts[i].match(TokenTypes[t])) {
           tokens.push({value: parts[i], type: t});
           break;
         }
+      }
+    }  
     return tokens;
   }
   
@@ -96,25 +110,25 @@ var Mathed = (function() {
   // Translator
   function translate(tree) {
     var html = '', wrap = function(s, tag) { return ['<', tag, '>', s, '</', tag, '>'].join(''); };
-    if (!tree)
-      return;
-    for (var i = 0; i < tree.length; i++) {
-      var t = tree[i];
-      if (typeof t == "undefined")
-        return;
-      switch((typeof t.length != "undefined") ? 'array' : t.type) {
-        case 'special':
-        case 'left_brace':
-        case 'right_brace':
-        case 'number':    html += t.value;                              break;
-        case 'map':       html += mapToHTML[t.value];                   break; 
-        case 'direct':    html += ['&', t.value, ';'].join('');         break;
-        case 'name':      html += wrap(t.value, 'em');                  break;
-        case 'operator':  html += ' ' + t.value + ' ';                  break;
-        case 'set':       html += ['{ ', translate([tree[++i]]), ' }'].join(''); break;
-        case 'sup':       html += wrap(translate([tree[++i]]), 'sup');  break;
-        case 'sub':       html += wrap(translate([tree[++i]]), 'sub');  break;
-        case 'array':     html += translate(t);                         break;
+    if (tree) {
+      for (var i = 0; i < tree.length; i++) {
+        var t = tree[i];
+        if (typeof t == "undefined")
+          continue;
+        switch((typeof t.length != "undefined") ? 'array' : t.type) {
+          case 'special':
+          case 'left_brace':
+          case 'right_brace':
+          case 'number':    html += t.value;                              break;
+          case 'map':       html += mapToHTML[t.value];                   break; 
+          case 'direct':    html += ['&', t.value, ';'].join('');         break;
+          case 'name':      html += wrap(t.value, 'em');                  break;
+          case 'operator':  html += ' ' + t.value + ' ';                  break;
+          case 'set':       html += ['{ ', translate([tree[++i]]), ' }'].join(''); break;
+          case 'sup':       html += wrap(translate([tree[++i]]), 'sup');  break;
+          case 'sub':       html += wrap(translate([tree[++i]]), 'sub');  break;
+          case 'array':     html += translate(t);                         break;
+        }
       }
     }
     return html;

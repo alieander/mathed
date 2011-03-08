@@ -11,7 +11,8 @@ $(function() {
 	function exitMathMode() {
 	  nb.focus();
 	  $(nb).find('.active').removeClass('active');
-		$('#mathin').hide();
+		
+		$('#overlay, #mathin').hide();
 	}
 	
 	// Enters math entry mode
@@ -30,6 +31,7 @@ $(function() {
 	  element.addClass('active');
 	  
 	  currentMath = element;
+	  $('#overlay').show();
 	  $('#mathin').val(element.data('src')).show().focus();
 	}
 	
