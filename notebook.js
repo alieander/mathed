@@ -3,18 +3,25 @@
  * by Ryan Sandor Richards
  */ 
 $(function() {
-	var nb = $('.mathed-notebook')[0], 
-	  mathId = 0, 
+	var nb = $('.mathed-notebook')[0],
+	  notebookHasFocus = false,
+	  mathId = 0,
+	  listId = 0,
 	  currentMath,
 	  savedRange;
 	
-	// Immediately give the notbook focus
-	nb.focus();
-	
 	/*----------------------------------------------------------------------------------------------------
-	 * Utility methods
+	 * Basic setup and utility
 	 *---------------------------------------------------------------------------------------------------*/
   
+  // Quickly setup notbook focus and blur
+  
+  $(nb).keydown(function(){ saveSelection(); })
+    .click(function() { saveSelection(); })
+    .focus(function() { notebookHasFocus = true; })
+    .blur(function() { notebookHasFocus = false; })
+    .focus();
+    
   // Prevents default behavior and stops propagation of an event
 	function halt(e) {
 	  e.preventDefault();
@@ -26,6 +33,8 @@ $(function() {
 	 *---------------------------------------------------------------------------------------------------*/
   $('.mathmode').mousedown(function(e) {
     halt(e);
+    if (!notebookHasFocus)
+      restoreSelection();
     enterMathMode();
   });
   
@@ -36,6 +45,30 @@ $(function() {
   $('.load').mousedown(function(e) {
     // TODO Implement me
   });
+	
+	$('.bullet-list').mousedown(function(e) {
+	  halt(e);
+	  if (!notebookHasFocus)
+      restoreSelection();
+    
+	  insertHtmlAtCursor('<ul id="_list_'+listId+'"><li></li></ul>');
+	  
+	  var li = $(nb).find('ul#_list_'+listId+" li:first-child");
+    setSelectionAfter(li[0]);
+	});
+	
+	$('.number-list').mousedown(function(e) {
+	  halt(e);
+	  if (!notebookHasFocus)
+      restoreSelection();
+    
+	  insertHtmlAtCursor('<ol id="_list_'+listId+'"><li></li></ol>');
+	  
+	  var li = $(nb).find('ol#_list_'+listId+" li:first-child");
+    setSelectionAfter(li[0]);
+	});
+	
+  
 	
 	/*----------------------------------------------------------------------------------------------------
 	 * Math Input
@@ -148,14 +181,14 @@ $(function() {
  	  element.addClass('active');
 
  	  currentMath = element;
- 	  $('#overlay').show();
+ 	  $('#overlay').fadeIn(100);
  	  $('#mathin').val(element.data('src')).show().focus();
  	}
   
   // Exits math mode and goes right back to regular editing
 	function exitMathMode(restore) {
 	  $(nb).find('.active').removeClass('active');
-		$('#overlay, #mathin').hide();
+		$('#overlay, #mathin').fadeOut(100);
 			
 		// Set the cursor position appropriately
 		if (restore)
@@ -186,7 +219,7 @@ $(function() {
 
   // Restores the current cursor position in the notebook
   function restoreSelection() {
-    nb.focus();
+    $(nb).focus();
 
     if (savedRange == null) 
       return;
@@ -202,22 +235,27 @@ $(function() {
       savedRange.select();
   }
   
-  // Sets the cursor to the position immediately following the current math element
-  function setSelectionAfterMath() {
-    var focusElement = currentMath.next()[0];
-    
-    if (!focusElement) return;
-    
-    nb.focus();
-	  setTimeout(function() {
-  	  var range = document.createRange();
-		  range.setStartBefore(focusElement);
-		  range.setEndBefore(focusElement);
+  // Sets the cursor to an element position
+  function setSelectionAfter(element) {
+    if (!element)
+      return;
+    else if (window.getSelection) {
+      var range = document.createRange();
+  	  range.setStartAfter(element);
+  	  range.setEndAfter(element);
 
-		  var sel = document.getSelection();
-		  sel.removeAllRanges();
-		  sel.addRange(range);
-		}, 10);
+  	  var sel = document.getSelection();
+  	  sel.removeAllRanges();
+  	  sel.addRange(range);
+    }
+    
+    // TODO Add IE Support
+  }
+  
+  // Sets the cursor to the position immediately following the current math element
+  function setSelectionAfterMath() {    
+    $(nb).focus();
+    setSelectionAfter(currentMath.next()[0]);
   }
   
 	// Catch normal typing in the notebook and look for the math character (Ctrl-m)
