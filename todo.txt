@@ -1,17 +1,21 @@
 The big ol' todo list for mathed:
 
 Notebook:
+  [*] Overlay to darken out everything else on special modes
+  [*] Set cursor position after exiting math mode with ENTER
+  [*] Restore cursor position when exiting with ESC
+  [ ] Save and Restore
   [ ] Tabbing between completed braces 
     (#x#)(y) <tab> (x)(#y#)
-  [ ] Equation mode (Ctrl-e)
-  [*] Overlay to darken out everything else on special modes
+    Note: Key Code for <TAB> is 9
   [ ] Help system / usage notes
+  [ ] Equation mode (Ctrl-e)
   
 Translator:
   [*] More symbols: to, from, in
-  [*] Blackboard Fonts: N, Z, Q, R, C, Q, O
+  [*] Blackboard Fonts: N, Z, Q, R, C, Q
   [ ] Summations, Products, and Limits
   [ ] Bar-style division
   [ ] Big braces
-  
+  [ ] "cap" and "cup" for union and intersection
 

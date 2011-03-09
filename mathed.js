@@ -10,7 +10,7 @@ var Mathed = (function() {
   	'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega', 'alpha', 'beta', 'gamma', 'delta',
   	'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi',
   	'omicron',	'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega',
-  	'and', 'or', 'not', 'infin'
+    'not', 'infin'
   ];
 
   // Non emphasised names
@@ -23,8 +23,9 @@ var Mathed = (function() {
   
   // Maps strings to various symbols
   var MAP = [
-      '<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'intersect', '<', '>', "'", '\\|', ',', 
-      'to', 'bbR', 'bbC', 'bbN', 'bbP', 'bbQ', 'bbZ', 'in', 'from'
+      '<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'cup', 'intersect', 'cap', 
+      '<', '>', "'", '\\|', ',', 'to', 'bbR', 'bbC', 'bbN', 'bbP', 'bbQ', 'bbZ', 'in', 'from',
+      'and', 'or'
     ],
     mapToHTML = {
       "'": ' &prime;',
@@ -39,7 +40,9 @@ var Mathed = (function() {
       '>': ' &gt; ',
       '|': ' &#x2223; ',
       'union': ' &#x22c3; ',
+      'cup': ' &#x22c3; ',
       'intersect': ' &#x22c2; ',
+      'cap': ' &#x22c2; ',
       ',': ', ',
       'to': ' &rarr; ',
       'from': ' &larr; ',
@@ -49,7 +52,9 @@ var Mathed = (function() {
       'bbP': '&#8473;', 
       'bbQ': '&#8474;', 
       'bbZ': '&#8484;',
-      'in': '&#8714;'
+      'in': '&#8714;',
+      'and': ' &and; ',
+      'or': ' &or; '
     };
   
   // Lexer
