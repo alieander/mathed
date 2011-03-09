@@ -10,7 +10,7 @@ var Mathed = (function() {
   	'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega', 'alpha', 'beta', 'gamma', 'delta',
   	'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi',
   	'omicron',	'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega',
-    'not', 'infin'
+    'infin', 'exist', 'empty', 'not'
   ];
 
   // Non emphasised names
@@ -25,7 +25,7 @@ var Mathed = (function() {
   var MAP = [
       '<=', '>=', '!=', '\\+-', '&&', '\\|\\|', '!', 'union', 'cup', 'intersect', 'cap', 
       '<', '>', "'", '\\|', ',', 'to', 'bbR', 'bbC', 'bbN', 'bbP', 'bbQ', 'bbZ', 'in', 'from',
-      'and', 'or'
+      'and', 'or', 'forall', 'notin', 'iff'
     ],
     mapToHTML = {
       "'": ' &prime;',
@@ -52,9 +52,12 @@ var Mathed = (function() {
       'bbP': '&#8473;', 
       'bbQ': '&#8474;', 
       'bbZ': '&#8484;',
-      'in': '&#8714;',
+      'in': ' &#8712; ',
       'and': ' &and; ',
-      'or': ' &or; '
+      'or': ' &or; ',
+      'forall': '&#8704;',
+      'notin': ' &#8713; ',
+      'iff': ' &harr; '
     };
   
   // Lexer
