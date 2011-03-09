@@ -5,7 +5,7 @@ Notebook:
   [*] Set cursor position after exiting math mode with ENTER
   [*] Restore cursor position when exiting with ESC
   [*] Lists (numeric and bulleted)
-  [ ] Save and Restore
+  [*] Save and Restore
   [ ] Smarter trailing whitespace after math elements
   [ ] Tabbing between completed braces 
     (#x#)(y) <tab> (x)(#y#)

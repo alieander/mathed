@@ -10,11 +10,12 @@
 		  <p class="controls">
 		    <a class="button mathmode">Math (Ctrl+M)</a>
 		    |
+		    <a class="button new">New</a>
 		    <a class="button save">Save</a>
 		    <a class="button load">Load</a>
 		    |
-		    <a class="button format bullet-list">&bullet; _</a>
-		    <a class="button format number-list">1) _</a>
+		    <a class="button bullet-list">&bullet; _</a>
+		    <a class="button number-list">1) _</a>
 		  </p>
 		  
 		  <input type="text" id="mathin">
@@ -23,6 +24,27 @@
 		<div class="mathed-notebook" contenteditable="true"></div>
 	
 	  <div id="overlay"></div>
+	
+	  <div id="dialog-overlay"></div>
+	
+	  <div id="save-dialog" class="dialog">
+	    <h3><i>save</i> <b>notebook</b></h3>
+	    <span>New </span><input type="text" class="name"><span>, or existing</span>
+	    <select></select>
+	    <div class="controls">
+	      <a class="button cancel">Cancel</a>
+	      <a class="button save">Save</a>
+	    </div>
+    </div>
+    
+    <div id="load-dialog" class="dialog">
+	    <h3><i>load</i> <b>notebook</b></h3>
+	    <select class="name"></select>
+	    <div class="controls">
+	      <input type="button" value="Cancel" class="cancel">
+	      <input type="button" value="Load" class="load">
+	    </div>
+    </div>
 	
 	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 		<script src="mathed.js" type="text/javascript" charset="utf-8"></script>

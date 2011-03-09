@@ -15,7 +15,6 @@ $(function() {
 	 *---------------------------------------------------------------------------------------------------*/
   
   // Quickly setup notbook focus and blur
-  
   $(nb).keydown(function(){ saveSelection(); })
     .click(function() { saveSelection(); })
     .focus(function() { notebookHasFocus = true; })
@@ -29,8 +28,45 @@ $(function() {
 	}
 	
 	/*----------------------------------------------------------------------------------------------------
-	 * Buttons
+	 * Buttons, Dialogs, etc.
 	 *---------------------------------------------------------------------------------------------------*/
+  
+  // Shows a dialog
+ 	function showDialog(sel) {
+ 	  $('#dialog-overlay').fadeIn(50);
+
+     var H = $(document).height(),
+       W = $(document).width(),
+       h = $(sel).height(),
+       w = $(sel).width();
+
+     $(sel).show().offset({
+       left: ((W-w)/2)|0,
+       top: ((H-h)/2)|0
+     });
+ 	}
+ 	
+ 	// Hides a dialog
+ 	function hideDialog(sel) {
+ 	  $(sel).fadeOut(50);
+    $('#dialog-overlay').fadeOut(50);
+ 	}
+
+  // Gets the list of saved notebooks and returns them as options HTML
+  function getSavedNotebooks() {
+    var html = '';
+    for (var k in localStorage) {
+      html += '<option>'+k+'</option>';
+    }
+    return html ? '<option selected value="-1">Choose a notebook...</option>' + html : null;
+  }
+
+ 	// Cancel button action for dialogs
+  $('.dialog .cancel').mousedown(function(e) {
+    hideDialog($(this).parents('.dialog'));
+  });
+  
+  // Button for entering math mode
   $('.mathmode').mousedown(function(e) {
     halt(e);
     if (!notebookHasFocus)
@@ -38,15 +74,89 @@ $(function() {
     enterMathMode();
   });
   
-  $('.save').mousedown(function(e) {
-    // TODO Implement me
+  // New notebook button
+  $('#header .new').mousedown(function(e) {
+    halt(e);
+    var answer = confirm('Are you sure you wish to start a new notebook?');
+    if (answer) {
+      $(nb).html('');
+    }
   });
   
-  $('.load').mousedown(function(e) {
-    // TODO Implement me
+  /*
+   * Save Dialog
+   */
+  $('#header .save').mousedown(function(e) {
+    var options = getSavedNotebooks();
+    if (options) {
+      $('#save-dialog select').html(options).show();
+      $('#save-dialog span').show();
+    }    
+    else
+      $('#save-dialog select, #save-dialog span').hide();
+    
+    showDialog('#save-dialog');
+  });
+  
+  $('#save-dialog select').change(function(e) { 
+    $('#save-dialog input').val( $(this).val() ); 
+  });
+  
+  $('#save-dialog').keydown(function(e) {
+    if (e.keyCode == 13)
+      $('#save-dialog .save').mousedown();
+    else if (e.keyCode == 27)
+      $('#save-dialog .cancel').mousedown();
+  });
+  
+  $('#save-dialog .save').mousedown(function(e) {
+    var name = $.trim( $('#save-dialog .name').val() );
+    
+    if (name.length == 0) {
+      alert("Please enter a non-empty name.");
+      $('#save-dialog .name').val('');
+      return;
+    }
+    else if (name == "-1") {
+      alert("Invalid name.");
+      $('#save-dialog .name').val('');
+      return;
+    }
+    
+    localStorage.setItem( $('#save-dialog .name').val(), $(nb).html() );
+    hideDialog('#save-dialog');
+  });
+  
+  /*
+   * Load Dialog
+   */
+  $('#header .load').mousedown(function(e) {
+    var options = getSavedNotebooks();
+    if (!options) {
+      alert('You have no saved notebooks to load.');
+      return;
+    }
+
+    $('#load-dialog select').html(options);
+    showDialog('#load-dialog');
+  });
+  
+  $('#load-dialog .load').mousedown(function(e) {
+    var name = $('#load-dialog select').val();
+    if (name == "-1") {
+      alert("Please choose a notebook");
+      return;
+    }
+    
+    $(nb).html( localStorage.getItem(name) );
+    
+    hideDialog('#load-dialog');
   });
 	
-	$('.bullet-list').mousedown(function(e) {
+	/*
+	 * Formatting buttons
+	 */
+	$('#header .bullet-list').mousedown(function(e) {
 	  halt(e);
 	  if (!notebookHasFocus)
       restoreSelection();
@@ -57,7 +167,7 @@ $(function() {
     setSelectionAfter(li[0]);
 	});
 	
-	$('.number-list').mousedown(function(e) {
+	$('#header .number-list').mousedown(function(e) {
 	  halt(e);
 	  if (!notebookHasFocus)
       restoreSelection();
@@ -96,7 +206,7 @@ $(function() {
 	// Actively converts the expressions typed by the user
 	function convert(e) {
 	  currentMath.html( Mathed.convert($('#mathin').val()) );
-		currentMath.data('src', $('#mathin').val());
+		currentMath[0].setAttribute('data-src', $('#mathin').val());
 		if (e.keyCode == 13 || e.keyCode == 27) {
 			halt(e);
 			
@@ -171,7 +281,7 @@ $(function() {
  	    insertHtmlAtCursor('<span contenteditable="false" data-id="' + (mathId++) + '" class="math"></span>');
  	    element = $('.mathed-notebook .math[data-id=' + (mathId-1) + ']');
       element.data('new', true);
-      element.data('src', '');
+      element[0].setAttribute('data-src', '');
  	  }
  	  else {
  	    element = $(element);
@@ -182,7 +292,7 @@ $(function() {
 
  	  currentMath = element;
  	  $('#overlay').fadeIn(100);
- 	  $('#mathin').val(element.data('src')).show().focus();
+ 	  $('#mathin').val(element[0].getAttribute('data-src')).show().focus();
  	}
   
   // Exits math mode and goes right back to regular editing
@@ -255,7 +365,8 @@ $(function() {
   // Sets the cursor to the position immediately following the current math element
   function setSelectionAfterMath() {    
     $(nb).focus();
-    setSelectionAfter(currentMath.next()[0]);
+    if (currentMath)
+      setSelectionAfter(currentMath.next()[0]);
   }
   
 	// Catch normal typing in the notebook and look for the math character (Ctrl-m)
