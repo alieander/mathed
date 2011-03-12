@@ -19,7 +19,7 @@ Translator:
   [*] Blackboard Fonts: N, Z, Q, R, C, Q
   [*] More symbols: iff, notin, empty, forall, exists
   [*] Plugin System for ease of extension
-  [ ] More Symbols: consequence |=, derived from |-
+  [*] More Symbols: consequence |=, derived from |-
   [ ] Summations, Products, and Limits
   [ ] Escape Sequences
   [ ] Bar-style division
