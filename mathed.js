@@ -37,7 +37,7 @@ var Mathed = (function() {
    */
   function MathedParser(pluginNames) {
     var direct = [],
-      special = ['\\(', '\\)'],
+      special = [],
       map = {tokens: [], mapping: {}};
     
     // Loads a plugin with the given name
@@ -87,9 +87,13 @@ var Mathed = (function() {
       frac: 'frac',
       overunder: 'sum|prod',
       name: /[a-zA-Z]/,
-      operator: /[+\-*\/=:%!]/,
+      operator: /[+\-*\/=:%!|]/,
       sub: /_/,
       sup: /\^/,
+      left_paren: /\(/,
+      right_paren: /\)/,
+      left_bracket: /\[/,
+      right_bracket: /\]/,
       left_brace: /\{/,
       right_brace: /\}/
     };
@@ -106,10 +110,9 @@ var Mathed = (function() {
       if (this.TokenTypes[k] !== false)
         patterns.push(this.TokenTypes[k].toString().replace(/^\//,'(').replace(/\/$/,')'));
     }
-      
-    this.lexExp = new RegExp(patterns.join('|'), 'g');
     
-    // Set the map for use later in translation
+    // Instance variables to aid translation  
+    this.lexExp = new RegExp(patterns.join('|'), 'g');
     this.map = map;
   }
   
@@ -131,6 +134,9 @@ var Mathed = (function() {
     for (var i = 0; i < parts.length; i++) { 
       for (var t in this.TokenTypes) {
         if (parts[i].match(this.TokenTypes[t])) {
+          if (t == 'overunder' || t == 'frac') {
+            this.largeParen = true;
+          }
           tokens.push({value: parts[i], type: t});
           break;
         }
@@ -146,21 +152,25 @@ var Mathed = (function() {
    * @return An abstract parse tree for the list of tokens.
    */
   MathedParser.prototype.parse = function(tokens) {
-    var stack = [[]], 
-      top = function() { return stack[stack.length-1]; };
-      
-    for (var i = 0; i < tokens.length; i++) {
-      var t = tokens[i], prev = (i > 0 ? tokens[i-1] : null);
-      if (t.value == '{')
-        stack.push([]);
-      else if (t.value == '}') {
-        var last = stack.pop();
-        if (top())
-          top().push(last);
-      }
-      else if (top())
-        top().push(t);
+    var stack = [[]], last = null;
+    
+    function top() { 
+      return stack[stack.length-1]; 
     }
+    
+    for (var i = 0; i < tokens.length; i++) {
+      var t = tokens[i];
+      switch (t.value) {
+        case '{':  stack.push([]);                                    break;
+        case '(':
+        case '[':  top().push(t); stack.push([]);                     break;      
+        case '}':
+        case ']':
+        case ')':  last = stack.pop(); if (top()) top().push(last);   break;
+        default:   if (top()) top().push(t);                          break;
+      }
+    }
+    
     return stack.pop();
   };
   
@@ -170,18 +180,138 @@ var Mathed = (function() {
    * @return Translated HTML from the parse tree.
    */
   MathedParser.prototype.translate = function(tree) {
-    var html = '';
+    if (!tree) 
+      return '';
+    
+    var map = this.map;
     
     function wrap(s, tag) {
       return ['<', tag, '>', s, '</', tag, '>'].join('');
     }
     
-    if (tree) {
+    function parenWrap(inside, type, size) {
+      var typeMap = {
+        '(': [15, 16, 17, 18, 19, 20],
+        '[': [21, 22, 23, 24, 25, 26],
+        '{': [27, 28, 29, 31, 32, 33]
+      };
+      
+      function code(i) {
+        return '&#91'+typeMap[type][i]+';';
+      }
+      
+      if (size == 0) {
+        switch (type) {
+          case '(':  return '(' + inside + ')';
+          case '[':  return '[' + inside + ']';
+          case '{':  return '{' + inside + '}';
+          default:   return inside;
+        }
+      }
+      
+      var html = '<div class="ou"><div class="p">' + code(0) + '</div>';
+      for (var k = 0; k < size-1; k++)
+        html += '<div class="p">' + code(1) + '</div>';
+      html += '<div class="p">' + code(2) + '</div></div>';
+      
+      html += ' ' + inside + ' ';
+      
+      html += '<div class="ou"><div class="p">' + code(3) + '</div>';
+      for (var k = 0; k < size-1; k++)
+        html += '<div class="p">' + code(4) + '</div>';
+      html += '<div class="p">' + code(5) + '</div></div>';
+      
+      return html;
+    }
+    
+    function translateRec(tree) {
+      var html = '', 
+        parenSize = 0,
+        childResult;
+      
       for (var i = 0; i < tree.length; i++) {
         var t = tree[i];
-        if (typeof t == "undefined")
-          continue;
+        if (typeof t == "undefined") continue;
+        
         switch((typeof t.length != "undefined") ? 'array' : t.type) {
+          
+          /*
+           * Parentheticals
+           */
+          case 'left_bracket':
+          case 'left_paren':
+            childResult = translateRec(tree[++i]);
+            html += parenWrap(childResult.html, t.value, childResult.parenSize);
+            parenSize = Math.max(parenSize, childResult.parenSize + 1);
+            break;
+          
+          /*
+           * Fractions, Products, and Sums
+           */
+          case 'frac':
+            var numer = translateRec([tree[++i]]),
+              denom = translateRec([tree[++i]]);
+          
+            html += [
+              '<div class="ou"><div>', 
+                numer.html, 
+              '</div><hr><div>', 
+                denom.html, 
+              '</div></div>'
+            ].join('');
+
+            parenSize = Math.max(1, parenSize, numer.parenSize, denom.parenSize);
+            break;
+            
+          case 'overunder':
+            var under = translateRec([tree[++i]]),
+              middle = translateRec([{value: t.value, type: 'direct'}]);
+              over = translateRec([tree[++i]]);
+              
+            html += [
+              '<div class="ou"><div class="small">', 
+                over.html, 
+              '</div><div class="m bigger">', 
+                middle.html, 
+              '</div><div class="small">', 
+                under.html, 
+              '</div></div>'
+            ].join('');
+            
+            parenSize = Math.max(1, parenSize, under.parenSize, over.parenSize);
+            break;
+  
+          /*
+           * Set, Superscript, Subscript.
+           */
+          case 'set':
+            childResult = translateRec( [tree[++i]] );
+            html += parenWrap(childResult.html, '{', childResult.parenSize);
+            parenSize = Math.max(1, parenSize, childResult.parenSize);
+            break;
+          case 'sup':
+            childResult = translateRec( [tree[++i]] );
+            parenSize = Math.max(parenSize, childResult.parenSize);
+            html += wrap(childResult.html, 'sup');
+            break;
+          case 'sub':
+            childResult = translateRec( [tree[++i]] );
+            parenSize = Math.max(parenSize, childResult.parenSize);
+            html += wrap(childResult.html, 'sub');
+            break;
+            
+          /*
+           * Arrays
+           */
+          case 'array':     
+            childResult = translateRec(t);
+            parenSize = Math.max(parenSize, childResult.parenSize);
+            html += childResult.html;
+            break;
+            
+          /*
+           * The rest of the story...
+           */
           case 'special':
           case 'left_brace':
           case 'right_brace':
@@ -190,38 +320,16 @@ var Mathed = (function() {
           case 'direct':    html += ['&', t.value, ';'].join('');         break;
           case 'name':      html += wrap(t.value, 'em');                  break;
           case 'operator':  html += ' ' + t.value + ' ';                  break;
-          case 'set':       html += ['{ ', this.translate([tree[++i]]), ' }'].join(''); break;
-          case 'sup':       html += wrap(this.translate([tree[++i]]), 'sup');  break;
-          case 'sub':       html += wrap(this.translate([tree[++i]]), 'sub');  break;
-          case 'array':     html += this.translate(t);                         break;
-          case 'frac':
-            html += [
-              '<div class="ou"><div>', 
-                this.translate([tree[++i]]), 
-              '</div><hr><div>', 
-                this.translate([tree[++i]]), 
-              '</div></div>'
-            ].join('');
-            break;
-          case 'overunder':
-            var under = this.translate([tree[++i]]),
-              middle = this.translate([{value: t.value, type: 'direct'}]);
-              over = this.translate([tree[++i]]);
-            html += [
-              '<div class="ou"><div class="small">', 
-                over, 
-              '</div><div class="m bigger">', 
-                middle, 
-              '</div><div class="small">', 
-                under, 
-              '</div></div>'
-            ].join('');
-            break;
-            
         }
       }
+      
+      return {
+        html: html, 
+        parenSize: parenSize
+      };
     }
-    return html;
+    
+    return translateRec(tree).html;
   };
   
   /**

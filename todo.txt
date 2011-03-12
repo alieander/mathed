@@ -21,12 +21,12 @@ Translator:
   [*] Plugin System for ease of extension
   [*] More Symbols: consequence |=, derived from |-
   [*] "cap" and "cup" for union and intersection 
-  
   [*] Summations, Products, Bar-Style Division
+  
+  [-] Nested and Sized Parentheticals
+  
   [ ] Limits, Integrals
-  
   [ ] Vector Math Symbols: cross, dot, vec
-  
-  [ ] Escapes
-  [ ] Big braces
-  
+  [ ] Vectors and Matrices
+  [ ] Escaping
+  [ ] Better plugin system (needs ability to define sums, prod, etc.)
