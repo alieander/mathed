@@ -7,6 +7,7 @@ Notebook:
   [*] Lists (numeric and bulleted)
   [*] Save and Restore
   [ ] Smarter trailing whitespace after math elements
+    We only need to add spacer tabs when the math element is at the end...
   [ ] Tabbing between completed braces 
     (#x#)(y) <tab> (x)(#y#)
     Note: Key Code for <TAB> is 9
@@ -17,7 +18,10 @@ Translator:
   [*] More symbols: to, from, in
   [*] Blackboard Fonts: N, Z, Q, R, C, Q
   [*] More symbols: iff, notin, empty, forall, exists
+  [*] Plugin System for ease of extension
+  [ ] More Symbols: consequence |=, derived from |-
   [ ] Summations, Products, and Limits
+  [ ] Escape Sequences
   [ ] Bar-style division
   [ ] Big braces
   [ ] "cap" and "cup" for union and intersection

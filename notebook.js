@@ -8,7 +8,8 @@ $(function() {
 	  mathId = 0,
 	  listId = 0,
 	  currentMath,
-	  savedRange;
+	  savedRange, 
+	  parser = Mathed.all();
 	
 	/*----------------------------------------------------------------------------------------------------
 	 * Basic setup and utility
@@ -205,7 +206,7 @@ $(function() {
  	
 	// Actively converts the expressions typed by the user
 	function convert(e) {
-	  currentMath.html( Mathed.convert($('#mathin').val()) );
+	  currentMath.html( parser.convert($('#mathin').val()) );
 		currentMath[0].setAttribute('data-src', $('#mathin').val());
 		if (e.keyCode == 13 || e.keyCode == 27) {
 			halt(e);

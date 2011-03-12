@@ -33,11 +33,12 @@
 		<script src="mathed.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript" charset="utf-8">
 			var mathin = document.getElementById('mathin'),
-				mathout = document.getElementById('mathout');
+				mathout = document.getElementById('mathout'),
+				parser = Mathed.all();
 			mathin.onkeydown = mathin.onkeyup = function(e) {
 				if (e.keyCode == 13)
 					mathin.value = '';
-				mathout.innerHTML = Mathed.convert(mathin.value);
+				mathout.innerHTML = parser.convert(mathin.value);
 			};
 		</script>
 	</body>
