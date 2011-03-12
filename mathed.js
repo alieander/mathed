@@ -84,6 +84,8 @@ var Mathed = (function() {
       special: false,
       number: /[0-9]+(\.[0-9]+)?/,
       set: 'set',
+      frac: 'frac',
+      overunder: 'sum|prod',
       name: /[a-zA-Z]/,
       operator: /[+\-*\/=:%!]/,
       sub: /_/,
@@ -168,7 +170,12 @@ var Mathed = (function() {
    * @return Translated HTML from the parse tree.
    */
   MathedParser.prototype.translate = function(tree) {
-    var html = '', wrap = function(s, tag) { return ['<', tag, '>', s, '</', tag, '>'].join(''); };
+    var html = '';
+    
+    function wrap(s, tag) {
+      return ['<', tag, '>', s, '</', tag, '>'].join('');
+    }
+    
     if (tree) {
       for (var i = 0; i < tree.length; i++) {
         var t = tree[i];
@@ -187,6 +194,30 @@ var Mathed = (function() {
           case 'sup':       html += wrap(this.translate([tree[++i]]), 'sup');  break;
           case 'sub':       html += wrap(this.translate([tree[++i]]), 'sub');  break;
           case 'array':     html += this.translate(t);                         break;
+          case 'frac':
+            html += [
+              '<div class="ou"><div>', 
+                this.translate([tree[++i]]), 
+              '</div><hr><div>', 
+                this.translate([tree[++i]]), 
+              '</div></div>'
+            ].join('');
+            break;
+          case 'overunder':
+            var under = this.translate([tree[++i]]),
+              middle = this.translate([{value: t.value, type: 'direct'}]);
+              over = this.translate([tree[++i]]);
+            html += [
+              '<div class="ou"><div class="small">', 
+                over, 
+              '</div><div class="m bigger">', 
+                middle, 
+              '</div><div class="small">', 
+                under, 
+              '</div></div>'
+            ].join('');
+            break;
+            
         }
       }
     }

@@ -1,0 +1,149 @@
+/*
+ * notebook.css
+ * The mathed notebook styles
+ * By Ryan Sandor Richards
+ */
+
+body {
+  margin: 0;
+  background-color: #cfcfcf;
+}
+
+#header {
+  margin: 0;
+  padding: 1em;
+  background: #eee;
+  border-bottom: 1px solid #676767;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+#header h1, p {
+  font-size: 16px;
+  margin: 0;
+  padding: 8px 0 0 0;
+  font-family: helvetica;
+  float: left;
+}
+
+#header p { margin-left: 20px;}
+
+h1 i, h3 i {
+  font-style: normal;
+  color: #248;
+}
+
+h1 b, h3 b {
+  color: #842;
+}
+
+#mathin {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+  width: 100%;
+  height: 100%;
+  line-height: 100%;
+  
+  text-align: center;
+  
+  background-color: #bfd7ef;
+  border: 1px dotted #204266;
+  font-size: 16px;
+  outline: none;
+  font-family: Courier;
+}
+
+#overlay, #dialog-overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: black;
+  opacity: 0.2;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: none;
+}
+
+#dialog-overlay {
+  z-index: 10;
+  opacity: 0.4;
+}
+
+.button {
+  border-radius: 2px;
+  background: #888;
+  color: white;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #aaa;
+  color: #676767;
+}
+
+.dialog {
+  position: fixed;
+  top: 50px;
+  left: 300px;
+  background: #eee;
+
+  -moz-box-shadow: 0 5px 20px #555;
+  -webkit-box-shadow: 0 5px 20px #555;
+  box-shadow: 0 5px 20px #555;
+
+  z-index: 11;
+  padding: 15px;
+  
+  font-family: helvetica;
+  font-size: 10pt;
+  
+  display: none;
+}
+
+.dialog h3 {
+  margin: 0 0 10px 0;
+  padding: 0;
+  font-size: 14px;
+}
+
+.dialog .controls {
+  margin-top: 10px;
+  padding-top: 14px;
+  text-align: right;
+  border-top: 1px solid #777;
+}
+
+.mathed-notebook {
+  border: 1px solid #888;
+  padding: 2.6em;
+  width: 800px;
+  margin: 80px auto 20px auto;
+  position: relative;
+  background-color: white;
+  -moz-box-shadow: 5px 5px 20px #555;
+  -webkit-box-shadow: 5px 5px 20px #555;
+  box-shadow: 5px 5px 20px #555;
+  outline: none;
+}
+
+.mathed-notebook .space {}
+
+.mathed-notebook .math:hover {
+  cursor: pointer;
+}
+
+.mathed-notebook .active {
+  background-color: #bfd7ef;
+  border: 1px dotted #7f97bf;
+  padding: 2px;
+  position: relative;
+  z-index: 6;
+}

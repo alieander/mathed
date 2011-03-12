@@ -20,9 +20,13 @@ Translator:
   [*] More symbols: iff, notin, empty, forall, exists
   [*] Plugin System for ease of extension
   [*] More Symbols: consequence |=, derived from |-
-  [ ] Summations, Products, and Limits
-  [ ] Escape Sequences
-  [ ] Bar-style division
+  [*] "cap" and "cup" for union and intersection 
+  
+  [*] Summations, Products, Bar-Style Division
+  [ ] Limits, Integrals
+  
+  [ ] Vector Math Symbols: cross, dot, vec
+  
+  [ ] Escapes
   [ ] Big braces
-  [ ] "cap" and "cup" for union and intersection
-
+  
