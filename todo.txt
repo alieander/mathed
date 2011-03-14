@@ -23,7 +23,8 @@ Translator:
   [*] "cap" and "cup" for union and intersection 
   [*] Summations, Products, Bar-Style Division
   
-  [-] Nested and Sized Parentheticals
+  [*] Revamped Parser & Translator
+  [ ] Nested and Sized Parentheticals
   
   [ ] Limits, Integrals
   [ ] Vector Math Symbols: cross, dot, vec
