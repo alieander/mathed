@@ -125,9 +125,7 @@ var Mathed = (function() {
     this.lexExp = new RegExp(patterns.join('|'), 'g');
     this.map = map;
   }
-  
-  MathedParser.prototype.lp = function(s) { this.parse( this.lex(s) ); };
-  
+
   /** 
    * Performs lexical analysis on a given string.
    * @param s String to lex
@@ -155,9 +153,10 @@ var Mathed = (function() {
   };
   
   /**
-   * Simple parser for constructing the AST.
+   * Simple stack-based parser for constructing the AST.
    * @param tokens List of tokens to parse.
    * @return An abstract parse tree for the list of tokens.
+   * @throws Parse errors if encountered.
    */
   MathedParser.prototype.parse = function(tokens) {
     if (!tokens || tokens.length < 1)
@@ -245,6 +244,18 @@ var Mathed = (function() {
     
     var html = '', map = this.map.mapping;
     
+    // Traverse the tree to determine the size of parentheticals
+    function prec(n) {
+      var m = 0;
+      for (var i = 0; i < n.children.length; i++)
+        m = Math.max(m, prec( n.children[i] ));
+      n.parenSize = m;
+      if (n.type == 'binary' || n.type == 'left_paren' || n.type == 'left_bracket' || (n.type == 'left_brace' && n.value == '\\{'))
+        m++;
+      return m;
+    };
+    prec(root);
+    
     // Traverses the parse tree to form HTML
     function trec(n) {
       var h1 = '', h2 = '';
@@ -262,20 +273,91 @@ var Mathed = (function() {
         case 'left_paren':
           for (var k = 0; k < n.children.length; k++)
             h1 += trec( n.children[k] );
+            
+          if (n.parenSize > 0) {
+            // Left Paren
+            h2 = '<div class="ou"><div class="p">&#9115;</div>';
+            for (var i = 0; i < n.parenSize - 1; i++)
+              h2 += '<div class="p">&#9116;</div>';
+            h2 += '<div class="p">&#9117</div></div>';
+            
+            // Contents
+            h2 += ' ' + h1 + ' ';
+            
+            // Right paren
+            h2 += '<div class="ou"><div class="p">&#9118;</div>';
+            for (var i = 0; i < n.parenSize - 1; i++)
+              h2 += '<div class="p">&#9119;</div>';
+            h2 += '<div class="p">&#9120</div></div>';
+            
+            return h2;
+          }
           return ['(', h1, ')'].join('');
         
         case 'left_bracket':
           for (var k = 0; k < n.children.length; k++)
             h1 += trec( n.children[k] );
+          
+          if (n.parenSize > 0) {
+            // Left Paren
+            h2 = '<div class="ou"><div class="p">&#9121;</div>';
+            for (var i = 0; i < n.parenSize - 1; i++)
+              h2 += '<div class="p">&#9122;</div>';
+            h2 += '<div class="p">&#9123</div></div>';
+
+            // Contents
+            h2 += ' ' + h1 + ' ';
+
+            // Right paren
+            h2 += '<div class="ou"><div class="p">&#9124;</div>';
+            for (var i = 0; i < n.parenSize - 1; i++)
+              h2 += '<div class="p">&#9125;</div>';
+            h2 += '<div class="p">&#9126</div></div>';
+              
+            return h2;
+          }
           return ['[', h1, ']'].join('');
           
         case 'left_brace':
           for (var k = 0; k < n.children.length; k++)
             h1 += trec( n.children[k] );
           
-          if (n.value == '\\{')
+          if (n.value != '\\{')
+            return h1;
+          
+          if (n.parenSize == 0) {
             return ['{', h1, '}'].join('');
-          return h1;
+          }
+          
+          if (n.parenSize == 1) {
+            return [
+              '<div class="ou"><div class="p">&#9136;</div><div class="p">&#9137;</div></div>',
+              h1,
+              '<div class="ou"><div class="p">&#9137;</div><div class="p">&#9136;</div></div>'
+            ].join('');
+          }
+          
+          var m = ((n.parenSize / 2) | 0) - 1;
+          h2 = '<div class="ou"><div class="p">&#9127;</div>';
+          for (var i = 0; i < m; i++)
+            h2 += '<div class="p">&#9130;</div>';
+          h2 += '<div class="p">&#9128;</div>';
+          for (var i = 0; i < m; i++)
+            h2 += '<div class="p">&#9130;</div>';
+          h2 += '<div class="p">&#9129;</div></div>';
+          
+          h2 += ' ' + h1 + ' ';
+          
+          h2 += '<div class="ou"><div class="p">&#9131;</div>';
+          for (var i = 0; i < m; i++)
+            h2 += '<div class="p">&#9130;</div>';
+          h2 += '<div class="p">&#9132;</div>';
+          for (var i = 0; i < m; i++)
+            h2 += '<div class="p">&#9130;</div>';
+          h2 += '<div class="p">&#9133;</div></div>';
+          
+          return h2;
+      
       
         // Single argument functions
         case 'unary':
@@ -462,6 +544,3 @@ Mathed.plugin('misc', {
     ',': ', '
   }
 });
-
-// TODO Remove me!
-p = Mathed.all();

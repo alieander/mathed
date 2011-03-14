@@ -22,9 +22,8 @@ Translator:
   [*] More Symbols: consequence |=, derived from |-
   [*] "cap" and "cup" for union and intersection 
   [*] Summations, Products, Bar-Style Division
-  
   [*] Revamped Parser & Translator
-  [ ] Nested and Sized Parentheticals
+  [*] Nested and Sized Parentheticals
   
   [ ] Limits, Integrals
   [ ] Vector Math Symbols: cross, dot, vec
