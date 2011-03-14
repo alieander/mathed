@@ -6,6 +6,7 @@ Notebook:
   [*] Restore cursor position when exiting with ESC
   [*] Lists (numeric and bulleted)
   [*] Save and Restore
+  
   [ ] Smarter trailing whitespace after math elements
     We only need to add spacer tabs when the math element is at the end...
   [ ] Tabbing between completed braces 
@@ -25,6 +26,10 @@ Translator:
   [*] Revamped Parser & Translator
   [*] Nested and Sized Parentheticals
   
+  [ ] Better Sized Parentheticals
+    [*] Pipes
+    [ ] Alternating types
+   
   [ ] Limits, Integrals
   [ ] Vector Math Symbols: cross, dot, vec
   [ ] Vectors and Matrices

@@ -206,7 +206,14 @@ $(function() {
  	
 	// Actively converts the expressions typed by the user
 	function convert(e) {
-	  currentMath.html( parser.convert($('#mathin').val()) );
+	  var result;
+	  
+	  try {
+	    result = parser.convert($('#mathin').val());
+	    currentMath.html( result );
+	  }
+	  catch (e) {}
+	  
 		currentMath[0].setAttribute('data-src', $('#mathin').val());
 		if (e.keyCode == 13 || e.keyCode == 27) {
 			halt(e);

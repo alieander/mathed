@@ -32,7 +32,11 @@
 			mathin.onkeydown = mathin.onkeyup = function(e) {
 				if (e.keyCode == 13)
 					mathin.value = '';
-				mathout.innerHTML = parser.convert(mathin.value);
+				try {
+				  var result = parser.convert(mathin.value);
+				  mathout.innerHTML = result;
+				}
+				catch (e) {}
 			};
 		</script>
 	</body>

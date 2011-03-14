@@ -99,7 +99,8 @@ var Mathed = (function() {
       unary: /[_\^]/,
       binary: 'frac|sum|prod',
       name: /[a-zA-Z]/,
-      operator: /[+\-*\/=:%!|]/,
+      operator: /[+\-*\/=:%!]/,
+      pipe: /\|/,
       left_paren: /\(/,
       right_paren: /\)/,
       left_bracket: /\[/,
@@ -246,10 +247,18 @@ var Mathed = (function() {
     
     // Traverse the tree to determine the size of parentheticals
     function prec(n) {
-      var m = 0;
-      for (var i = 0; i < n.children.length; i++)
+      var m = 0, pipes = [];
+      
+      for (var i = 0; i < n.children.length; i++) {
         m = Math.max(m, prec( n.children[i] ));
+        if ( n.children[i].type == 'pipe' )
+          pipes.push(n.children[i]);
+      }
+      
+      for (i = 0; i < pipes.length; i++)
+        pipes[i].parenSize = m;
       n.parenSize = m;
+      
       if (n.type == 'binary' || n.type == 'left_paren' || n.type == 'left_bracket' || (n.type == 'left_brace' && n.value == '\\{'))
         m++;
       return m;
@@ -268,6 +277,15 @@ var Mathed = (function() {
         case 'direct':    return ['&', n.value, ';'].join('');
         case 'name':      return ['<em>', n.value, '</em>'].join('');
         case 'operator':  return ' ' + n.value + ' ';
+        
+        case 'pipe':
+          if (n.parenSize == 0)
+            return ' | ';
+          
+          h1 = ' <div class="ou">';
+          for (var k = 0; k < n.parenSize; k++)
+            h1 += '<div class="p">&#9168;</div>';
+          return h1 + '</div> ';
         
         // Parentheticals
         case 'left_paren':
@@ -526,12 +544,12 @@ Mathed.plugin('set', {
 // Blackboard Bold font symbols
 Mathed.plugin('blackboard', {
   map: {
-    'bbR': '&#8477;', 
-    'bbC': '&#8450;', 
-    'bbN': '&#8469;', 
-    'bbP': '&#8473;', 
-    'bbQ': '&#8474;', 
-    'bbZ': '&#8484;'
+    'bbR': '<span class="big">&#8477;</span>', 
+    'bbC': '<span class="big">&#8450;</span>', 
+    'bbN': '<span class="big">&#8469;</span>', 
+    'bbP': '<span class="big">&#8473;</span>', 
+    'bbQ': '<span class="big">&#8474;</span>', 
+    'bbZ': '<span class="big">&#8484;</span>'
   }
 });
 
